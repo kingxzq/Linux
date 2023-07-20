@@ -1,0 +1,33 @@
+#include <stdio.h>                                                                                        
+#include <stdlib.h>
+ 
+int g_val=100;
+int g_unval;
+
+int main(int argc,char* argv[],char* env[])
+{
+     printf("code addr         :%p\n",main);
+     const char* p="hello";
+     printf("read only         :%p\n",p);
+     printf("global val        :%p\n",&g_val);
+     printf("global uninit  val:%p\n",&g_unval);
+     char* q1=(char*)malloc(10);
+     char* q2=(char*)malloc(10);
+     char* q3=(char*)malloc(10);
+     char* q4=(char*)malloc(10);
+     printf("heap addr         :%p\n",q1);
+     printf("heap addr         :%p\n",q2);
+     printf("heap addr         :%p\n",q3);
+     printf("heap addr         :%p\n",q4);
+ 
+     printf("stack addr        :%p\n",&q1);
+     printf("stack addr        :%p\n",&q2);
+     printf("stack addr        :%p\n",&q3);
+     printf("stack addr        :%p\n",&q4);
+ 
+     static int i=0;
+     printf("static addr       :%p\n",&i);
+     printf("args addr         :%p\n",argv[0]);
+     printf("env addr          :%p\n",env[0]);
+     return 0;
+ }
