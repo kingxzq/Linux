@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <assert.h>
+#include <stdlib.h>
+
+
+struct MyFILE_{
+    int fd;
+    char buffer[1024];
+    int end; //当前缓冲区的结尾
+};
+
+typedef struct MyFILE_ MyFILE;
+
+MyFILE *fopen_(const char *pathname, const char *mode)
+{
+    assert(pathname);
+    assert(mode);
+
+    MyFILE *fp = NULL;
+
+    if(strcmp(mode, "r") == 0)
+    {
+    }
+    else if(strcmp(mode, "r+") == 0)
+    {
+
+    }
+    else if(strcmp(mode, "w") == 0)
+    {
+
+        int fd = open(pathname, O_WRONLY | O_TRUNC | O_CREAT, 0666);
+        if(fd >= 0)
+        {
+            fp = (MyFILE*)malloc(sizeof(MyFILE));
+            memset(fp, 0, sizeof(MyFILE));
+            fp->fd = fd;
+        }
+    }
+    else if(strcmp(mode, "w+") == 0)
+    {
+
+    }
+    else if(strcmp(mode, "a") == 0)
+    {
+
+    }
+    else if(strcmp(mode, "a+") == 0)
+    {
+
+    }
+    else{}
+
+    return fp;
+}
+
+
+void fputs_(const char *message, MyFILE *fp)
+{
+    assert(message);
+    assert(fp);
+
+    strcpy(fp->buffer+fp->end, message); 
+    fp->end += strlen(message);
+
+
+    printf("%s\n", fp->buffer);
+
+
+    if(fp->fd == 0)
+    {
+        //标准输入
+    }
+    else if(fp->fd == 1)
+    {
+        //标准输出
+        if(fp->buffer[fp->end-1] =='\n' )
+        {
+            write(fp->fd, fp->buffer, fp->end);
+            fp->end = 0;
+        }
+    }
+    else if(fp->fd == 2)
+    {
+        //标准错误
+    }
+    else
+    {
+        //其他文件
+    }
+}
+
+
+void fflush_(MyFILE *fp)
+{
+    assert(fp);
+
+    if(fp->end != 0)
+    {
+        //把数据写到了内核
+        write(fp->fd, fp->buffer, fp->end);
+        syncfs(fp->fd); //将数据写入到磁盘
+        fp->end = 0;
+    }
+}
+
+void fclose_(MyFILE *fp)
+{
+    assert(fp);
+    fflush_(fp);
+    close(fp->fd);
+    free(fp);
+}
