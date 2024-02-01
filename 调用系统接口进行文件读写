@@ -1,0 +1,38 @@
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+int main() {
+    // 2.1 使用代码打开当前路径下的“bite”文件（如果文件不存在在创建文件），向文件当中写入“i like linux!”。
+    int fd = open("bite", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    const char *content = "i like linux!";
+    ssize_t content_size = write(fd, content, strlen(content));
+    if (content_size == -1) {
+        perror("Error writing to file");
+        close(fd);
+        return 1;
+    }
+
+    // 2.2 从文件当中读出文件当中的内容，打印到标准输出当中；关闭文件描述符。
+    lseek(fd, 0, SEEK_SET);  // 将文件指针移动到文件开头
+
+    char buffer[256];
+    ssize_t read_size = read(fd, buffer, sizeof(buffer) - 1);
+    if (read_size > 0) {
+        buffer[read_size] = '\0';  // 添加字符串结束符
+        printf("Content read from file: %s\n", buffer);
+    } else {
+        perror("Error reading from file");
+    }
+
+    close(fd);
+
+    return 0;
+}
