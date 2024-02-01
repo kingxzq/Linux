@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    // 2.1 使用代码打开当前路径下的“bite”文件（如果文件不存在在创建文件），向文件当中写入“linux so easy!”。
+    FILE *file = fopen("bite", "w+");
+    if (file == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    const char *content = "linux so easy!";
+    size_t content_size = fwrite(content, sizeof(char), strlen(content), file);
+    if (content_size != strlen(content)) {
+        perror("Error writing to file");
+        fclose(file);
+        return 1;
+    }
+
+    // 2.2 从文件当中读出文件当中的内容，打印到标准输出当中；关闭文件流指针。
+    fseek(file, 0, SEEK_SET);  // 将文件指针移动到文件开头
+
+    char buffer[256];
+    size_t read_size = fread(buffer, sizeof(char), sizeof(buffer) - 1, file);
+    if (read_size > 0) {
+        buffer[read_size] = '\0';  // 添加字符串结束符
+        printf("Content read from file: %s\n", buffer);
+    } else {
+        perror("Error reading from file");
+    }
+
+    fclose(file);
+
+    return 0;
+}
